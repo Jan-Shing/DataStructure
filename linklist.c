@@ -3,20 +3,20 @@
 #include <string.h>
 
 typedef struct link_node {
-//	struct link_list *head;
 	struct link_node *next;
 	char  data[];
 } Node;
+
 typedef struct link_list{
 	struct Node *head;
 } List;
 
-void create_node(Node **list, char *str)
+void create_node(Node **node, char *str)
 {
 
-	*list = malloc(sizeof(Node)+strlen(str));
-	(*list)->next = NULL;
-	strcpy( (*list)->data, str);
+	*node = malloc(sizeof(Node)+strlen(str));
+	(*node)->next = NULL;
+	strcpy( (*node)->data, str);
 }
 
 void push_list_node(List *list, char *data)
@@ -24,13 +24,15 @@ void push_list_node(List *list, char *data)
 	Node *curr = NULL;
 	Node *pre = NULL;
 	Node *new = NULL;
-	create_node(&new, data);
+
 
 	if(list == NULL){
 		printf("[Error] list is empty\n");
 		return;
 	}else{
+		create_node(&new, data);
 		curr = list->head;
+
 		while(curr != NULL){
 			pre = curr;
 			curr = curr->next;
@@ -39,32 +41,59 @@ void push_list_node(List *list, char *data)
 	}
 }
 
-void remove_node(List *list, Node *target)
+int remove_node(List *list, char *target)
 {
 	Node *curr = NULL;
 	Node *pre = NULL;
 	
-	curr = list;
-	while((curr != target) && curr){
+	curr = list->head;
+
+	while(strcmp(curr->data, target) ){
 		pre = curr;
 		curr = curr->next;
+
+		if(curr == NULL)
+			return -1;
 	}
+
 
 	if(pre)
-		pre->next = target->next;
+		pre->next = curr->next;
 	else
-		list->head = target->next;
-
+		list->head = curr->next;
+	
+	printf("In %s, will remove %s node\n",__func__,curr->data);	
+	free(curr);
 }
-void destroy_list(Node **list)
+
+Node *find_node(List *list, char *target)
 {
-	Node *curr = NULL;
-	while(*list){
-		curr = *list;
-		*list=(*list)->next;
+	Node *curr = list->head;
+
+	while(strcmp(curr->data, target)){
+		curr = curr->next;
+		if(curr == NULL)
+			return NULL;
+		
+	}
+	printf("find node contain %s\n",curr->data);
+	return curr;
+	
+}
+
+
+void destroy_list(List *list)
+{
+	Node *curr = list->head;
+	Node *next = NULL;
+
+	while(curr){
+		next = curr->next;
 		free(curr);
+		curr = next;
 	}
 }
+
 int main (void)
 {
 	char *mydata = "Linux TED";
@@ -81,8 +110,14 @@ int main (void)
 	push_list_node(&my_list, "my_fourth_node");
 	
 	printf("my node data is %s\n",my_node->next->next->next->data);
+	find_node(&my_list, "my_third_node");
 
-	destroy_list(&my_node);
+	if(remove_node(&my_list,"my_third_node") == -1)
+		printf("no this string to remove\n");
+	if(find_node(&my_list, "m") == NULL )
+		printf("no node be found\n");
+	
+	destroy_list(&my_list);
 }
 
 
