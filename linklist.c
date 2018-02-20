@@ -43,27 +43,23 @@ void push_list_node(List *list, char *data)
 
 int remove_node(List *list, char *target)
 {
-	Node *curr = NULL;
-	Node *pre = NULL;
-	
-	curr = list->head;
+	Node **curr = &list->head;
+	Node *pre = list->head;
 
-	while(strcmp(curr->data, target) ){
-		pre = curr;
-		curr = curr->next;
-
-		if(curr == NULL)
+	while(strcmp((*curr)->data, target) ){
+		printf("In %s, compareing the string of %s\n",__func__, (*curr)->data);
+		pre = *curr;
+		curr =&(* curr)->next;
+		
+		if(*curr == NULL)
 			return -1;
 	}
 
 
-	if(pre)
-		pre->next = curr->next;
-	else
-		list->head = curr->next;
+		*curr = pre->next;
 	
-	printf("In %s, will remove %s node\n",__func__,curr->data);	
-	free(curr);
+	printf("In %s, will remove %s node\n",__func__,(*curr)->data);	
+	free(*curr);
 }
 
 Node *find_node(List *list, char *target)
